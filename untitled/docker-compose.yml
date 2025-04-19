@@ -1,0 +1,74 @@
+version: "3.8"
+services:
+    php:
+        build:
+            context: .
+            dockerfile: docker/images/Dockerfile.php
+        container_name: php
+        restart: unless-stopped
+        command: >
+            bash -c "php artisan serve --host 0.0.0.0"
+        stdin_open: true
+        tty: true
+        networks:
+            - bridge_network
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "3m"
+        depends_on:
+            - postgres
+        volumes:
+            - ./:/usr/src/app
+
+    nginx:
+        container_name: nginx
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: docker/images/Dockerfile.nginx
+        ports:
+            - "80:80"
+        networks:
+            - bridge_network
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "3m"
+        depends_on:
+            - php
+        volumes:
+            - ./storage/app/public:/var/www/html/storage/
+
+    postgres:
+        image: postgres:17
+        container_name: postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: ${DB_DATABASE}
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+        networks:
+            - bridge_network
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "3m"
+
+    rdb:
+        container_name: rdb
+        image: redis:7
+        networks:
+            - bridge_network
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "3m"
+
+volumes:
+    postgres_data:
+
+networks:
+    bridge_network:
