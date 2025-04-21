@@ -7,7 +7,7 @@ services:
         container_name: php
         restart: unless-stopped
         command: >
-            bash -c "php artisan serve --host 0.0.0.0"
+            bash -c "php artisan serve --host 0.0.0.0 && composer install --optimize-autoloader --no-interaction --no-progress --prefer-dist"
         stdin_open: true
         tty: true
         networks:
