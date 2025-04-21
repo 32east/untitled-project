@@ -29,4 +29,4 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-&& echo "LS:" && ls / && composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+&& echo "LS:" && ls /usr/src/app && composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
